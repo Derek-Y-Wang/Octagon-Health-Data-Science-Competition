@@ -1,17 +1,23 @@
+# Name: Question 2
+# Date: 07/11/2020
+# Authors: Robert Ciborowski, Derek Wang
+# Description: Answers question 2 of the competition:  What might predict
+#              successful therapy? We use a patient recovering before 9 months
+#              as a success.
+#              The code starts running in main() (at the bottom of this file).
+
 from Constants import *
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import chi2
-from sklearn.linear_model import LinearRegression
-
 from SelectKBest import selectKBestAndGetBestValues
 
 
 def getNumberOfSuccesses(data, row):
+    """
+    Returns the number of successful treatments for a given row.
+    """
     sum = 0
 
     for i in range(MONTHS_COLUMN_START + 1, MONTHS_COLUMN_START + 10, 1):
@@ -20,12 +26,16 @@ def getNumberOfSuccesses(data, row):
     return sum
 
 def addSuccessfulTherapyColumn(data):
+    """
+    Returns a DataFrame showing the % of therapies that were successful.
+    """
     values = []
 
     for i in range(0, len(data.index), 3):
         row = [data["Prov"].iloc[i], data["Con_ACT"].iloc[i],
                data["Sex"].iloc[i], data["Age"].iloc[i]]
 
+        # We are not interested in aggregated data.
         if "ALL" in row:
             continue
 
@@ -43,6 +53,7 @@ def findMostCorrelatedColumns(data: pd.DataFrame):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33,
                                                         random_state=1)
 
+    # Encoding our data to numbers:
     oe = OrdinalEncoder()
     oe.fit(X_train)
     X_train_enc = pd.DataFrame(oe.transform(X_train), columns=X_train.columns)
@@ -53,6 +64,8 @@ def findMostCorrelatedColumns(data: pd.DataFrame):
     y_train_enc = pd.DataFrame(le.transform(y_train))
     # y_test_enc = pd.DataFrame(le.transform(y_test))
 
+    # This finds the columns that are the most correlated with success. It also
+    # finds their values that are the most correlated with dropout.
     best_1, best_1_combos = selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=1)
     best_2, best_2_combos = selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=2)
     best_3, best_3_combos = selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=3)
@@ -87,7 +100,10 @@ def main():
 
     # Question 3
     print("====== Question 2 ======")
+    # This adds the "% that were successful therapies" to each row.
     data_successful_therapy = addSuccessfulTherapyColumn(data)
+    # This finds the columns and values most correlated with a successful
+    # therapy.
     findMostCorrelatedColumns(data_successful_therapy)
 
 
