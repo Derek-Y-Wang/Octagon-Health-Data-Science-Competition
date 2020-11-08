@@ -1,3 +1,5 @@
+import itertools
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -6,7 +8,7 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 from sklearn.feature_selection import mutual_info_classif
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import accuracy_score
 
 NUM_MONTHS = 40
@@ -44,40 +46,76 @@ def getNumberOfCensors(data: pd.DataFrame, row: int):
     return sum
 
 
+def selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=1):
+    fs1 = SelectKBest(score_func=chi2, k=k)
+    fs1.fit(X_train_enc, y_train_enc)
+
+    best_1 = []
+
+    for i in range(4):
+        if fs1.get_support()[i] == True:
+            best_1.append(X_train.columns[i])
+
+    oe_1 = OrdinalEncoder()
+    raw_best_1 = np.array(data[best_1].to_numpy())
+    oe_1.fit(raw_best_1)
+    best_1_X = oe_1.transform(raw_best_1)
+
+    transformed_Y = data.iloc[:, 4].to_list()
+    model_1 = LinearRegression().fit(best_1_X, transformed_Y)
+
+    stats = []
+    category_combos = list(itertools.product(*oe_1.categories_))
+
+    for combo in category_combos:
+        input = oe_1.transform(np.asarray([combo]))
+        stats.append(model_1.predict(input)[0])
+
+    indices = [i for i in range(len(stats))]
+    bestCombos = []
+
+    for i in range(3):
+        index = np.where(stats == np.max(stats))[0][0]
+        bestCombos.append(category_combos[indices[index]])
+        stats.pop(index)
+        indices.pop(index)
+
+    return best_1, bestCombos
+
 def getMostCorrelatedColumns(data: pd.DataFrame):
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33,
                                                         random_state=1)
 
-    # instantiate the OrdinalEncoder class to encode categorical input features
     oe = OrdinalEncoder()
-    # fit the OrdinalEncoder class on training set
     oe.fit(X_train)
-    # transform training and test sets and convert to DFs
     X_train_enc = pd.DataFrame(oe.transform(X_train), columns=X_train.columns)
     X_test_enc = pd.DataFrame(oe.transform(X_test), columns=X_test.columns)
 
-    # instantiate the LabelEncoder class to encode the categorical target class
     le = LabelEncoder()
-    # fit the LabelEncoder class on training set
     le.fit(y_train)
-    # transform training and test target variables and convert to DFs
     y_train_enc = pd.DataFrame(le.transform(y_train))
-    y_test_enc = pd.DataFrame(le.transform(y_test))
+    # y_test_enc = pd.DataFrame(le.transform(y_test))
 
-    # instantiate SelectKBest class to select the best 4 features
-    # use score_func=mutual_info_classif for Mutual Information
-    # Use k='all' to see the scores for all features
-    fs = SelectKBest(score_func=chi2, k=4)
-    # fit on training features and target
-    fs.fit(X_train_enc, y_train_enc)
-    # transform training and test features and convert to DFs. These will be fed to the ML algorithm for model training
-    X_train_fs = pd.DataFrame(fs.transform(X_train_enc),
-                              columns=X_train_enc.columns[fs.get_support()])
-    X_test_fs = pd.DataFrame(fs.transform(X_test_enc),
-                             columns=X_test_enc.columns[fs.get_support()])
+    best_1, best_1_combos = selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=1)
+    best_2, best_2_combos = selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=2)
+    best_3, best_3_combos = selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=3)
 
+    print("* Most correlated column to discontinuation:")
+    print(best_1)
+    print("* Top 3 values for this column that get the highest discontinuation:")
+    print(best_1_combos)
+
+    print("* 2 most correlated columns to discontinuation:")
+    print(best_2)
+    print("* Top 3 values for these 2 columns that get the highest discontinuation:")
+    print(best_2_combos)
+
+    print("* 3 most correlated columns to discontinuation:")
+    print(best_3)
+    print("* Top 3 values for these 3 columns that get the highest discontinuation:")
+    print(best_3_combos)
 
 def findDiscontinuationReasons(data):
     values = []
@@ -95,7 +133,6 @@ def findDiscontinuationReasons(data):
 
     # Find the most correlated columns
     getMostCorrelatedColumns(discontinuationData)
-    pass
 
 
 def main():
