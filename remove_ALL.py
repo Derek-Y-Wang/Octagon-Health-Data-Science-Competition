@@ -43,10 +43,137 @@ def plot_for_all(df):
     y = ['M' + str(i) for i in range(len(x))]
 
     plt.plot(y, x, label='ALL data')
+    plt.xlabel("Months")
+    plt.ylabel("Number of people")
+    plt.title("People in the study ALL")
     plt.show()
     # print(x)
 
-# def plot_by_age(df):
+
+def plot_by_location(df):
+    regions = set()
+    for index, row in df.iterrows():
+        regions.add(row['Prov'])
+
+    print(regions)
+    regions.remove('ALL')
+
+    for prov in regions:
+        x = df.loc[df['Measure'] == 'Tx']
+        x = x.loc[df['Con_ACT'] == "ALL"]
+        x = x.loc[df['Sex'] == 'ALL']
+        x = x.loc[df['Age'] == 'ALL']
+        x = x.loc[df['Prov'] == str(prov)]
+
+        x = list(x.iloc[0, 6:].values)
+
+        y = ['M' + str(i) for i in range(len(x))]
+
+        plt.plot(y, x, label=prov)
+
+    plt.xlabel("Months")
+    plt.ylabel("Number of people")
+    plt.title("People in the study LOCATION")
+    plt.legend()
+    plt.show()
+
+
+def plot_by_con_act(df):
+    others = set()
+    for index, row in df.iterrows():
+        others.add(row['Con_ACT'])
+
+    others.remove('ALL')
+
+    for con_act in others:
+        x = df.loc[df['Measure'] == 'Tx']
+        x = x.loc[df['Con_ACT'] == con_act]
+        x = x.loc[df['Sex'] == 'ALL']
+        x = x.loc[df['Age'] == 'ALL']
+        x = x.loc[df['Prov'] == 'ALL']
+
+        x = list(x.iloc[0, 6:].values)
+
+        y = ['M' + str(i) for i in range(len(x))]
+
+        plt.plot(y, x, label=con_act)
+
+    plt.xlabel("Months")
+    plt.ylabel("Number of people")
+    plt.legend()
+    plt.title("People in the study CON_ACT")
+    plt.show()
+
+
+def plot_by_sex(df):
+    sex = set()
+    for index, row in df.iterrows():
+        sex.add(row['Sex'])
+
+    sex.remove("ALL")
+
+    for s in sex:
+        x = df.loc[df['Measure'] == 'Tx']
+        x = x.loc[df['Con_ACT'] == 'ALL']
+        x = x.loc[df['Sex'] == s]
+        x = x.loc[df['Age'] == 'ALL']
+        x = x.loc[df['Prov'] == 'ALL']
+
+        x = list(x.iloc[0, 6:].values)
+
+        y = ['M' + str(i) for i in range(len(x))]
+
+        plt.plot(y, x, label=s)
+
+    plt.xlabel("Months")
+    plt.ylabel("Number of people")
+    plt.title("People in the study SEX")
+    plt.legend()
+    plt.show()
+
+
+def plot_by_age(df):
+    age_group = set()
+    for index, row in df.iterrows():
+        age_group.add(row['Age'])
+
+    age_group.remove("ALL")
+
+    for age in age_group:
+        x = df.loc[df['Measure'] == 'Tx']
+        x = x.loc[df['Con_ACT'] == 'ALL']
+        x = x.loc[df['Sex'] == "ALL"]
+        x = x.loc[df['Age'] == age]
+        x = x.loc[df['Prov'] == 'ALL']
+
+        x = list(x.iloc[0, 6:].values)
+
+        y = ['M' + str(i) for i in range(len(x))]
+
+        plt.plot(y, x, label=age)
+
+    plt.xlabel("Months")
+    plt.ylabel("Number of people")
+    plt.title("People in the study AGE")
+    plt.legend()
+    plt.show()
+
+# Not done
+def age_pie(df):
+    age_group = set()
+    for index, row in df.iterrows():
+        age_group.add(row['Age'])
+
+
+    for age in age_group:
+        x = df.loc[df['Measure'] == 'Tx']
+        x = x.loc[df['Con_ACT'] == 'ALL']
+        x = x.loc[df['Sex'] == "ALL"]
+        x = x.loc[df['Age'] == age]
+        x = x.loc[df['Prov'] == 'ALL']
+
+        x = list(x.iloc[0, 6])
+        print(x)
 
 
 if __name__ == '__main__':
@@ -59,4 +186,10 @@ if __name__ == '__main__':
     DATA.reset_index(inplace=True)
 
     past_nine_months(DATA)
-    # plot_for_all(DATA)
+    plot_for_all(DATA)
+    plot_by_location(DATA)
+    plot_by_con_act(DATA)
+    plot_by_sex(DATA)
+    plot_by_age(DATA)
+    # age_pie(DATA)
+
