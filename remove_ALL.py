@@ -1,9 +1,52 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 def past_nine_months(df):
 
-    print(df.loc[df['Measure']=='Tx'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure','M9']])
+    df = df.loc[df['Measure']=='Tx'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure','M0', 'M9']]
+    overall = df.loc[df['Prov']=='ALL'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure', 'M0', 'M9']]
+
+    overall = overall.loc[df['Sex']=='ALL'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure', 'M0', 'M9']]
+    overall = overall.loc[df['Age']=='ALL'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure', 'M0','M9']]
+    overall = overall.loc[df['Con_ACT'] == 'ALL'][['Prov', 'Con_ACT', 'Sex', 'Age', 'Measure', 'M0','M9']]
+    # print(df.iloc[354])
+    print("Overall left after 9 month")
+    print(overall)
+    print('================')
+
+    new_col = []
+    for index, row in df.iterrows():
+
+        if row['M0'] == 'Nan':
+            row['M0'] = 0
+        if row['M9'] == 'Nan':
+            row['M9'] = 0
+
+        if row['M0'] == 0:
+            new_col.append(0)
+        else:
+            new_col.append(row['M9']/row['M0'])
+    df["%after 9months"] = new_col
+    print(df)
+
+
+def plot_for_all(df):
+    x = df.loc[df['Measure']=='Tx']
+    x = x.loc[df['Sex']=='ALL']
+    x = x.loc[df['Prov']=='ALL']
+    x = x.loc[df['Sex']=='ALL']
+    x = x.loc[df['Age']=='ALL']
+    x = x.loc[df['Con_ACT']=='ALL']
+    x = list(x.iloc[0, 6:].values)
+
+    y = ['M' + str(i) for i in range(len(x))]
+
+    plt.plot(y, x, label='ALL data')
+    plt.show()
+    # print(x)
+
+# def plot_by_age(df):
 
 
 if __name__ == '__main__':
@@ -16,3 +59,4 @@ if __name__ == '__main__':
     DATA.reset_index(inplace=True)
 
     past_nine_months(DATA)
+    # plot_for_all(DATA)
