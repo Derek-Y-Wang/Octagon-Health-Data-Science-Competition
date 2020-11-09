@@ -38,7 +38,7 @@ We are interpreting **Measure-censored** to represent interval censoring, such t
 - Python 3.6+
 - Python Packages:NumPy, Matplotlib.pyplot, scikit-learn
 
-# File Information
+## File Information
 These are the files that you should be running
 - question_1.py 
 	- Analyzes overall patient drop/retenation rate over the course of the treatment time 
@@ -48,4 +48,11 @@ These are the files that you should be running
 	- Looks at monthly discontinuation rates and uses SelectKBest Algorithm to determine what maybe resulting in the observed disconinuation rates.
 - grapher.py 
 	- Generates graphs based on given data that can be analyzed
+
+## Technical Details
+###### Deeper Look into Questions 2 and 4
+In both cases we to determine the dependence between each factor in the dataset and the success percentage. To do this, we used the chi-square test along with scikit-learn’s SelectKBest implementation. We then determined which values for the most correlated features provide the greatest chance of success. With the given results we then used scikit-learn’s LinearRegression model, which performs linear regression on the most correlated factors against the success rate. However we realized that some optimal results occurred in values like “ALL”, “UNKWN” or “Null”, but excluded these results as they do not provide specific conclusive results.
+
+**For more results on our findings refer to the [pdf](OctagonDataScienceCompetitionResults.pdf)**
+
 
