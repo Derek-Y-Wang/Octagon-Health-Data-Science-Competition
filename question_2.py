@@ -36,7 +36,7 @@ def addSuccessfulTherapyColumn(data):
                data["Sex"].iloc[i], data["Age"].iloc[i]]
 
         # We are not interested in aggregated data.
-        if "ALL" in row:
+        if "ALL" in row or "UNKWN" in row:
             continue
 
         successes = getNumberOfSuccesses(data, i)
@@ -70,21 +70,20 @@ def findMostCorrelatedColumns(data: pd.DataFrame):
     best_2, best_2_combos = selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=2)
     best_3, best_3_combos = selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=3)
 
-    print("Please note that we are skipping rows with the \"ALL\" value.")
+    print("Please note that we are skipping rows with the \"ALL\" or \"UNKWN\" values.")
     print("* Most correlated column to success:")
     print(best_1)
-    print("* Top 3 values for this column that get the highest success:")
+    print("* Top 5 values for this column that get the highest success:")
     print(best_1_combos)
 
     print("* 2 most correlated columns to success:")
     print(best_2)
-    print("* Top 3 values for these 2 columns that get the highest success:")
+    print("* Top 5 values for these 2 columns that get the highest success:")
     print(best_2_combos)
 
     print("* 3 most correlated columns to success:")
     print(best_3)
-    print("* Top 3 values for these 3 columns that get the highest success:")
-    print("* Top 3 values for these 3 columns that get the highest success:")
+    print("* Top 5 values for these 3 columns that get the highest success:")
     print(best_3_combos)
 
 def main():

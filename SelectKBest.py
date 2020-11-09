@@ -40,7 +40,7 @@ def selectKBestAndGetBestValues(data, X_train, X_train_enc, y_train_enc, k=1):
     indices = [i for i in range(len(stats))]
     bestCombos = []
 
-    for i in range(3):
+    for i in range(5):
         index = np.where(stats == np.max(stats))[0][0]
         bestCombos.append(category_combos[indices[index]])
         stats.pop(index)
