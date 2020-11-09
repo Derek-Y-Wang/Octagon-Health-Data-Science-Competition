@@ -176,6 +176,141 @@ def age_pie(df):
         print(x)
 
 
+def provincial_table(df):
+    # regions = set()
+    # for index, row in df.iterrows():
+    #     regions.add(row['Prov'])
+    #
+    # print(regions)
+    # regions.remove('ALL')
+
+    x = df.loc[df['Measure'] == 'Tx']
+    x = x.loc[df['Con_ACT'] == 'ALL']
+    x = x.loc[df['Sex'] == "ALL"]
+    x = x.loc[df['Age'] == "ALL"]
+
+    # print(x['', 6:])
+
+
+def avg_drop_rate(df):
+    events = df.loc[df['Measure'] == 'events']
+    events = events.loc[df['Sex'] == 'ALL']
+    events = events.loc[df['Prov'] == 'ALL']
+    events = events.loc[df['Sex'] == 'ALL']
+    events = events.loc[df['Age'] == 'ALL']
+    events = events.loc[df['Con_ACT'] == 'ALL']
+    events = list(events.iloc[0, 6:].values)
+
+    censor = df.loc[df['Measure'] == 'censored']
+    censor = censor.loc[df['Sex'] == 'ALL']
+    censor = censor.loc[df['Prov'] == 'ALL']
+    censor = censor.loc[df['Sex'] == 'ALL']
+    censor = censor.loc[df['Age'] == 'ALL']
+    censor = censor.loc[df['Con_ACT'] == 'ALL']
+    censor = list(censor.iloc[0, 6:].values)
+
+    total_ppl = df.loc[df['Measure'] == 'Tx']
+    total_ppl = total_ppl.loc[df['Sex'] == 'ALL']
+    total_ppl = total_ppl.loc[df['Prov'] == 'ALL']
+    total_ppl = total_ppl.loc[df['Sex'] == 'ALL']
+    total_ppl = total_ppl.loc[df['Age'] == 'ALL']
+    total_ppl = total_ppl.loc[df['Con_ACT'] == 'ALL']
+    total_ppl = list(total_ppl.iloc[0, 6:].values)
+
+    total_drop = []
+    for i in range(len(events)):
+        if not str(events[i]).isnumeric():
+            events[i] = 0
+        if not str(censor[i]).isnumeric():
+            censor[i] = 0
+        if not str(total_ppl[i]).isnumeric():
+            total_ppl[i] = 0
+        total_drop.append(events[i] + censor[i])
+
+    y = ['M' + str(i) for i in range(len(total_ppl))]
+    leave_percent = [0]
+    event_percent = [0]
+    censor_percent = [0]
+    for i in range(1, len(y)):
+        event_percent.append(events[i]/total_ppl[i-1])
+        leave_percent.append(total_drop[i] / total_ppl[i - 1])
+        censor_percent.append(censor[i] / total_ppl[i - 1])
+
+    title="Monthly Censor Rate"
+    xlabel="Month"
+    ylabel="Percent"
+    x=event_percent
+
+    plt.plot(y, x)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+    print(sum(x)/39)
+
+
+
+
+def drop_count_bargraph(df):
+    # libraries
+    import numpy as np
+    events = df.loc[df['Measure'] == 'events']
+    events = events.loc[df['Sex'] == 'ALL']
+    events = events.loc[df['Prov'] == 'ALL']
+    events = events.loc[df['Sex'] == 'ALL']
+    events = events.loc[df['Age'] == 'ALL']
+    events = events.loc[df['Con_ACT'] == 'ALL']
+    events = list(events.iloc[0, 6:].values)
+
+    censor = df.loc[df['Measure'] == 'censored']
+    censor = censor.loc[df['Sex'] == 'ALL']
+    censor = censor.loc[df['Prov'] == 'ALL']
+    censor = censor.loc[df['Sex'] == 'ALL']
+    censor = censor.loc[df['Age'] == 'ALL']
+    censor = censor.loc[df['Con_ACT'] == 'ALL']
+    censor = list(censor.iloc[0, 6:].values)
+
+    total_drop = []
+    for i in range(len(events)):
+        if not str(events[i]).isnumeric():
+            events[i] = 0
+        if not str(censor[i]).isnumeric():
+            censor[i] = 0
+        total_drop.append(events[i] + censor[i])
+    # set width of bar
+    barWidth = 0.25
+
+    # set height of bar
+
+    bars1 = total_drop
+    bars2 = events
+    bars3 = censor
+
+    # Set position of bar on X axis
+    r1 = np.arange(len(bars1))
+    r2 = [x + barWidth for x in r1]
+    r3 = [x + barWidth for x in r2]
+
+    # Make the plot
+    plt.bar(r1, bars1, color='#7f6d5f', width=barWidth, edgecolor='white',
+            label='Total Dropped')
+    plt.bar(r2, bars2, color='#557f2d', width=barWidth, edgecolor='white',
+            label='Events Dropped')
+    plt.bar(r3, bars3, color='#2d7f5e', width=barWidth, edgecolor='white',
+            label='Censor Dropped')
+
+    # Add xticks on the middle of the group bars
+    plt.xlabel('Months', fontweight='bold')
+    plt.xticks([r + barWidth for r in range(len(bars1))],
+               ['M' + str(i) for i in range(len(events))])
+
+    plt.ylabel('Number of People', fontweight='bold')
+    # Create legend & Show graphic
+    plt.title('Number of patients discontinued each month')
+    plt.legend()
+    plt.show()
+
+
 if __name__ == '__main__':
     DATA = pd.read_excel('Octagon_data_set_TKI_2020.xlsx', sheet_name="Data_Table")
     DATA = DATA[9:]
@@ -185,11 +320,13 @@ if __name__ == '__main__':
     DATA.columns = cols.split('\t')
     DATA.reset_index(inplace=True)
 
-    past_nine_months(DATA)
-    plot_for_all(DATA)
-    plot_by_location(DATA)
-    plot_by_con_act(DATA)
-    plot_by_sex(DATA)
-    plot_by_age(DATA)
+    # past_nine_months(DATA)
+    # plot_for_all(DATA)
+    # plot_by_location(DATA)
+    # plot_by_con_act(DATA)
+    # plot_by_sex(DATA)
+    # plot_by_age(DATA)
     # age_pie(DATA)
-
+    # provincial_table(DATA)
+    # drop_count_bargraph(DATA)
+    avg_drop_rate(DATA)
