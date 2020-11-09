@@ -73,18 +73,17 @@ def findMostCorrelatedColumns(data: pd.DataFrame):
     print("Please note that we are skipping rows with the \"ALL\" value.")
     print("* Most correlated column to success:")
     print(best_1)
-    print("* Top 3 values for this column that get the highest success:")
+    print("* Top 5 values for this column that get the highest success:")
     print(best_1_combos)
 
     print("* 2 most correlated columns to success:")
     print(best_2)
-    print("* Top 3 values for these 2 columns that get the highest success:")
+    print("* Top 5 values for these 2 columns that get the highest success:")
     print(best_2_combos)
 
     print("* 3 most correlated columns to success:")
     print(best_3)
-    print("* Top 3 values for these 3 columns that get the highest success:")
-    print("* Top 3 values for these 3 columns that get the highest success:")
+    print("* Top 5 values for these 3 columns that get the highest success:")
     print(best_3_combos)
 
 def main():
