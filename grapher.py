@@ -1,63 +1,27 @@
+# Name: Plot Generator
+# Date: 08/11/2020
+# Authors: Robert Ciborowski, Derek Wang
+# Description: This file generates some graphs of all types allowing us to
+#              analyze data and make prediction and other findings that maybe
+#              insightful.
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def past_nine_months(df):
-
-    df = df.loc[df['Measure']=='Tx'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure','M0', 'M9']]
-    overall = df.loc[df['Prov']=='ALL'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure', 'M0', 'M9']]
-
-    overall = overall.loc[df['Sex']=='ALL'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure', 'M0', 'M9']]
-    overall = overall.loc[df['Age']=='ALL'][['Prov','Con_ACT', 'Sex', 'Age', 'Measure', 'M0','M9']]
-    overall = overall.loc[df['Con_ACT'] == 'ALL'][['Prov', 'Con_ACT', 'Sex', 'Age', 'Measure', 'M0','M9']]
-    # print(df.iloc[354])
-    print("Overall left after 9 month")
-    print(overall)
-    print('================')
-
-    new_col = []
-    for index, row in df.iterrows():
-
-        if row['M0'] == 'Nan':
-            row['M0'] = 0
-        if row['M9'] == 'Nan':
-            row['M9'] = 0
-
-        if row['M0'] == 0:
-            new_col.append(0)
-        else:
-            new_col.append(row['M9']/row['M0'])
-    df["%after 9months"] = new_col
-    print(df)
-
-
-def plot_for_all(df):
-    x = df.loc[df['Measure']=='Tx']
-    x = x.loc[df['Sex']=='ALL']
-    x = x.loc[df['Prov']=='ALL']
-    x = x.loc[df['Sex']=='ALL']
-    x = x.loc[df['Age']=='ALL']
-    x = x.loc[df['Con_ACT']=='ALL']
-    x = list(x.iloc[0, 6:].values)
-
-    y = ['M' + str(i) for i in range(len(x))]
-
-    plt.plot(y, x, label='ALL data')
-    plt.xlabel("Months")
-    plt.ylabel("Number of people")
-    plt.title("People in the study ALL")
-    plt.show()
-    # print(x)
-
-
 def plot_by_location(df):
+    """
+    Plot two graphs based on location numerically and by percentage
+    :param df:
+    :return:
+    """
     regions = set()
     for index, row in df.iterrows():
         regions.add(row['Prov'])
 
     print(regions)
     regions.remove('ALL')
-
+    plt.subplot(2, 1, 1)
     for prov in regions:
         x = df.loc[df['Measure'] == 'Tx']
         x = x.loc[df['Con_ACT'] == "ALL"]
@@ -75,10 +39,35 @@ def plot_by_location(df):
     plt.ylabel("Number of people")
     plt.title("People in the study LOCATION")
     plt.legend()
+
+    plt.subplot(2, 1, 2)
+    for prov in regions:
+        x = df.loc[df['Measure'] == 'Tx']
+        x = x.loc[df['Con_ACT'] == "ALL"]
+        x = x.loc[df['Sex'] == 'ALL']
+        x = x.loc[df['Age'] == 'ALL']
+        x = x.loc[df['Prov'] == str(prov)]
+
+        x1 = list(x.iloc[0, 6:].values)
+        x = [x1[i]/x1[0] for i in range(len(x1))]
+        y = ['M' + str(i) for i in range(len(x))]
+
+        plt.plot(y, x, label=prov)
+
+    plt.xlabel("Months")
+    plt.ylabel("Percent of People")
+    plt.title("Percent of People Remaining by LOCATION")
+
+    plt.legend()
     plt.show()
 
 
 def plot_by_con_act(df):
+    """
+    Plot graph based on people after each month based on changing Con_ACT
+    :param df:
+    :return:
+    """
     others = set()
     for index, row in df.iterrows():
         others.add(row['Con_ACT'])
@@ -106,6 +95,11 @@ def plot_by_con_act(df):
 
 
 def plot_by_sex(df):
+    """
+    Plot graph of people left each month based on sex
+    :param df:
+    :return:
+    """
     sex = set()
     for index, row in df.iterrows():
         sex.add(row['Sex'])
@@ -133,6 +127,12 @@ def plot_by_sex(df):
 
 
 def plot_by_age(df):
+    """
+    Plot graph of people left each month based on age
+
+    :param df:
+    :return:
+    """
     age_group = set()
     for index, row in df.iterrows():
         age_group.add(row['Age'])
@@ -155,6 +155,19 @@ def plot_by_age(df):
     plt.xlabel("Months")
     plt.ylabel("Number of people")
     plt.title("People in the study AGE")
+
+    for age in age_group:
+        x = df.loc[df['Measure'] == 'Tx']
+        x = x.loc[df['Con_ACT'] == 'ALL']
+        x = x.loc[df['Sex'] == "ALL"]
+        x = x.loc[df['Age'] == age]
+        x = x.loc[df['Prov'] == 'ALL']
+
+        x = list(x.iloc[0, 6:].values)
+
+        y = ['M' + str(i) for i in range(len(x))]
+
+        plt.plot(y, x, label=age)
     plt.legend()
     plt.show()
 
@@ -176,23 +189,12 @@ def age_pie(df):
         print(x)
 
 
-def provincial_table(df):
-    # regions = set()
-    # for index, row in df.iterrows():
-    #     regions.add(row['Prov'])
-    #
-    # print(regions)
-    # regions.remove('ALL')
-
-    x = df.loc[df['Measure'] == 'Tx']
-    x = x.loc[df['Con_ACT'] == 'ALL']
-    x = x.loc[df['Sex'] == "ALL"]
-    x = x.loc[df['Age'] == "ALL"]
-
-    # print(x['', 6:])
-
-
 def avg_drop_rate(df):
+    """
+    Plots data in percentage of average drop rate each month and people left
+    :param df:
+    :return:
+    """
     events = df.loc[df['Measure'] == 'events']
     events = events.loc[df['Sex'] == 'ALL']
     events = events.loc[df['Prov'] == 'ALL']
@@ -236,22 +238,35 @@ def avg_drop_rate(df):
         leave_percent.append(total_drop[i] / total_ppl[i - 1])
         censor_percent.append(censor[i] / total_ppl[i - 1])
 
-    title="Monthly Censor Rate"
+    title="Monthly Discontinued/Event Rate"
     xlabel="Month"
     ylabel="Percent"
     x=event_percent
-
+    plt.subplot(2, 1, 1)
     plt.plot(y, x)
     plt.title(title)
     plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    title2="Percent of People Left Monthly"
+    xlabel2="Percent of People Left"
+    plt.subplot(2, 1, 2)
+    x=[total_ppl[i]/total_ppl[0] for i in range(len(total_ppl))]
+    plt.plot(y, x)
+    plt.title(title2)
+    plt.xlabel(xlabel2)
     plt.ylabel(ylabel)
     plt.show()
     print(sum(x)/39)
 
 
-
-
 def drop_count_bargraph(df):
+    """
+    Plot bar graph displaying people who leave each month along side
+    reason for leaving (event or censored)
+    :param df:
+    :return:
+    """
     # libraries
     import numpy as np
     events = df.loc[df['Measure'] == 'events']
@@ -293,11 +308,11 @@ def drop_count_bargraph(df):
 
     # Make the plot
     plt.bar(r1, bars1, color='#7f6d5f', width=barWidth, edgecolor='white',
-            label='Total Dropped')
+            label='Events + Censored')
     plt.bar(r2, bars2, color='#557f2d', width=barWidth, edgecolor='white',
-            label='Events Dropped')
-    plt.bar(r3, bars3, color='#2d7f5e', width=barWidth, edgecolor='white',
-            label='Censor Dropped')
+            label='Events')
+    plt.bar(r3, bars3, color='#fcca03', width=barWidth, edgecolor='white',
+            label='Censored')
 
     # Add xticks on the middle of the group bars
     plt.xlabel('Months', fontweight='bold')
@@ -320,13 +335,11 @@ if __name__ == '__main__':
     DATA.columns = cols.split('\t')
     DATA.reset_index(inplace=True)
 
-    # past_nine_months(DATA)
-    # plot_for_all(DATA)
-    # plot_by_location(DATA)
+    plot_by_location(DATA)
     # plot_by_con_act(DATA)
     # plot_by_sex(DATA)
     # plot_by_age(DATA)
     # age_pie(DATA)
     # provincial_table(DATA)
     # drop_count_bargraph(DATA)
-    avg_drop_rate(DATA)
+    # avg_drop_rate(DATA)
