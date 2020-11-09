@@ -1,6 +1,7 @@
 # Octagon-Health-Data-Science-Competition
 Octagon Health Data Science Competition hosted by the University of Toronto.
-November 6th, 2020 - November 9th, 2020
+November 6th, 2020 - November 9th, 2020.
+Our paper can be found here: [pdf](OctagonDataScienceCompetitionResults.pdf)
 
 ## Scenario
 You work for a company called "Octagon Insurance".										
@@ -53,6 +54,6 @@ These are the files that you should be running:
 ###### Deeper Look into Questions 2 and 4
 In both questions, we need to determine the correlation between each feature in the dataset and the success percentage. To do this, we used the chi-square test along with scikit-learn’s SelectKBest implementation. We then determined which values for the most correlated features provide the greatest chance of success. With the given results we then used scikit-learn’s LinearRegression model, which performs linear regression on the most correlated factors against the success rate. However, we had to exclude rows with values like “ALL”, “UNKWN” or “Null” as they do not provide specific conclusive results.
 
-**For more results on our findings refer to the [pdf](OctagonDataScienceCompetitionResults.pdf)**
+**For more results on our findings, please refer to our paper: [pdf](OctagonDataScienceCompetitionResults.pdf)**
 
 
