@@ -38,5 +38,14 @@ We are interpreting **Measure-censored** to represent interval censoring, such t
 - Python 3.6+
 - Python Packages:NumPy, Matplotlib.pyplot, scikit-learn
 
-# Running the Code
+# File Information
+These are the files that you should be running
+- question_1.py 
+	- Analyzes overall patient drop/retenation rate over the course of the treatment time 
+- question_2.py 
+	- Uses SelectKBest Algorithm inorder to determine which variables are valued the most and correlate heaviest towards successful therapy.
+- question_3_4.py
+	- Looks at monthly discontinuation rates and uses SelectKBest Algorithm to determine what maybe resulting in the observed disconinuation rates.
+- grapher.py 
+	- Generates graphs based on given data that can be analyzed
 
