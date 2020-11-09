@@ -326,6 +326,34 @@ def drop_count_bargraph(df):
     plt.show()
 
 
+def save_img(backend, name):
+    """
+    Stretches graphs to max size
+    :param backend:
+    :param name:
+    :return:
+    """
+    if backend == 'QT':
+        # Option 1
+        # QT backend
+        manager = plt.get_current_fig_manager()
+        manager.window.showMaximized()
+
+    if backend == 'TkAgg':
+        # Option 2
+        # TkAgg backend
+        manager = plt.get_current_fig_manager()
+        manager.resize(*manager.window.maxsize())
+
+    if backend == 'WX':
+        # Option 3
+        # WX backend
+        manager = plt.get_current_fig_manager()
+        manager.frame.Maximize(True)
+
+    plt.savefig('./graphs/'+ name)
+
+
 if __name__ == '__main__':
     DATA = pd.read_excel('Octagon_data_set_TKI_2020.xlsx', sheet_name="Data_Table")
     DATA = DATA[9:]
@@ -335,10 +363,13 @@ if __name__ == '__main__':
     DATA.columns = cols.split('\t')
     DATA.reset_index(inplace=True)
 
+    backend = plt.get_backend()
+    print(backend)
+
     plot_by_location(DATA)
     plot_by_con_act(DATA)
     plot_by_sex(DATA)
     plot_by_age(DATA)
-    age_pie(DATA)
+
     drop_count_bargraph(DATA)
     avg_drop_rate(DATA)
